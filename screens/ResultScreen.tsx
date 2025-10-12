@@ -44,9 +44,60 @@ const ResultScreen: React.FC<ResultScreenProps> = ({ navigate, historyImage }) =
 
   if (error && !prediction) {
     return (
-      <div className="text-center p-10">
-        <p className="text-red-500">{error}</p>
-        <button onClick={() => navigate('camera')} className="mt-4 bg-primary-500 text-white px-4 py-2 rounded">Try again</button>
+      <div className="space-y-6 animate-fade-in">
+        <Header title="Analysis Failed" subtitle="Unable to identify plant" />
+        
+        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-6">
+          <div className="flex items-start">
+            <div className="flex-shrink-0">
+              <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+              </svg>
+            </div>
+            <div className="ml-3">
+              <h3 className="text-sm font-medium text-red-800 dark:text-red-200">
+                Analysis Failed
+              </h3>
+              <div className="mt-2 text-sm text-red-700 dark:text-red-300">
+                <p>{error}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-6">
+          <h3 className="text-sm font-medium text-blue-800 dark:text-blue-200 mb-2">
+            Tips for better results:
+          </h3>
+          <ul className="text-sm text-blue-700 dark:text-blue-300 space-y-1">
+            <li>• Take a clear, well-lit photo of the plant leaf</li>
+            <li>• Make sure the leaf fills most of the frame</li>
+            <li>• Try different angles if the first attempt fails</li>
+            <li>• Ensure the plant is one of the supported types</li>
+          </ul>
+        </div>
+
+        <div className="flex space-x-3">
+          <button 
+            onClick={() => navigate('camera')} 
+            className="flex-1 bg-primary-500 hover:bg-primary-600 text-white px-4 py-3 rounded-lg font-medium transition-colors"
+          >
+            Try Camera Again
+          </button>
+          <button 
+            onClick={() => navigate('gallery')} 
+            className="flex-1 bg-gray-500 hover:bg-gray-600 text-white px-4 py-3 rounded-lg font-medium transition-colors"
+          >
+            Try Gallery
+          </button>
+        </div>
+        
+        <button 
+          onClick={() => navigate('home')} 
+          className="w-full bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 px-4 py-2 rounded-lg transition-colors"
+        >
+          Back to Home
+        </button>
       </div>
     );
   }

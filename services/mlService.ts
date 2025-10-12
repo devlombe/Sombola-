@@ -128,14 +128,28 @@ class MLService {
       // Debug log
       console.log('[MLService] Prediction results:', {
         predictedLabel,
-        confidence,
-        allProbabilities: Array.from(probabilities).map((p, i) => ({ label: this.labels[i], prob: p }))
+        confidence: (confidence * 100).toFixed(1) + '%',
+        allProbabilities: Array.from(probabilities).map((p, i) => ({ 
+          label: this.labels[i], 
+          confidence: (p * 100).toFixed(1) + '%' 
+        })).sort((a, b) => parseFloat(b.confidence) - parseFloat(a.confidence)).slice(0, 5)
       });
 
       // Confidence threshold: only classify if confidence is high enough
-      const CONFIDENCE_THRESHOLD = 0.7;
+      const CONFIDENCE_THRESHOLD = 0.3; // Lowered from 0.7 to be more permissive
       if (confidence < CONFIDENCE_THRESHOLD) {
-        throw new Error('Not recognized: Image does not match any known plant/disease with high confidence.');
+        // Log detailed prediction info for debugging
+        console.log('[MLService] Low confidence prediction:', {
+          predictedLabel,
+          confidence: (confidence * 100).toFixed(1) + '%',
+          threshold: (CONFIDENCE_THRESHOLD * 100).toFixed(1) + '%',
+          topPredictions: Array.from(probabilities)
+            .map((p, i) => ({ label: this.labels[i], confidence: (p * 100).toFixed(1) + '%' }))
+            .sort((a, b) => parseFloat(b.confidence) - parseFloat(a.confidence))
+            .slice(0, 3)
+        });
+        const supportedPlantTypes = this.labels.map(l => l.split(/[___]/)[0]).filter((v, i, a) => a.indexOf(v) === i);
+        throw new Error(`Low confidence prediction (${(confidence * 100).toFixed(1)}%). The image might not be a supported plant type or the quality might be too low. Supported plants: ${supportedPlantTypes.join(', ')}. Try taking a clearer photo focusing on the plant leaves.`);
       }
 
       const diseaseInfo = diseaseService.getDiseaseInfo(predictedLabel);
