@@ -1,0 +1,10 @@
+Eggplant_Healthy_Leaf
+Eggplant_Leaf_Spot_Disease
+Eggplant_Mosaic_Virus_Disease
+Pumpkin___Bacterial_Leaf_Spot
+Pumpkin___Downy_Mildew
+Pumpkin___Healthy_Leaf
+Pumpkin___Mosaic_Disease
+Tomato__Bacterial_spot
+Tomato__Tomato_mosaic_virus
+Tomato__healthy

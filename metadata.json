@@ -1,0 +1,8 @@
+
+{
+  "name": "Sombola - Plant Disease Detection",
+  "description": "An AI-powered web application to help identify plant diseases from images. Use your camera or upload a photo to get an instant analysis and care recommendations.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
