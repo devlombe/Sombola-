@@ -119,23 +119,70 @@ class MLService {
       // Get top prediction
       const maxIndex = probabilities.indexOf(Math.max(...probabilities));
       const predictedLabel = this.labels[maxIndex];
-      const confidence = probabilities[maxIndex];
+      const confidence = probabilities[maxIndex]; // Keep for backward compatibility
 
       // Clean up tensors
       imageTensor.dispose();
       predictions.dispose();
 
-      // Debug log
-      console.log('[MLService] Prediction results:', {
+      // Enhanced confidence checking with multi-prediction analysis
+      const TOP_PREDICTIONS = Array.from(probabilities)
+        .map((p, i) => ({ label: this.labels[i], confidence: p as number }))
+        .sort((a, b) => b.confidence - a.confidence)
+        .slice(0, 3);
+
+      // Add safety checks for array access
+      if (TOP_PREDICTIONS.length < 2) {
+        throw new Error('Insufficient predictions from model');
+      }
+
+      const topConfidence = TOP_PREDICTIONS[0].confidence;
+      const secondConfidence = TOP_PREDICTIONS[1].confidence;
+      const confidenceGap = topConfidence - secondConfidence;
+
+      // Debug log with enhanced information
+      console.log('[MLService] Enhanced prediction analysis:', {
         predictedLabel,
-        confidence,
-        allProbabilities: Array.from(probabilities).map((p, i) => ({ label: this.labels[i], prob: p }))
+        topConfidence: (topConfidence * 100).toFixed(1) + '%',
+        secondConfidence: (secondConfidence * 100).toFixed(1) + '%',
+        confidenceGap: (confidenceGap * 100).toFixed(1) + '%',
+        topPredictions: TOP_PREDICTIONS.map(p => ({
+          label: p.label,
+          confidence: (p.confidence * 100).toFixed(1) + '%'
+        }))
       });
 
-      // Confidence threshold: only classify if confidence is high enough
-      const CONFIDENCE_THRESHOLD = 0.7;
-      if (confidence < CONFIDENCE_THRESHOLD) {
-        throw new Error('Not recognized: Image does not match any known plant/disease with high confidence.');
+      // Enhanced confidence threshold logic
+      // This approach helps detect unsupported crops by checking both:
+      // 1. Overall confidence level (is the prediction strong enough?)
+      // 2. Confidence gap (are the top predictions too close, indicating uncertainty?)
+      const CONFIDENCE_THRESHOLD = 0.4; // Slightly higher threshold for better accuracy
+      const MIN_CONFIDENCE_GAP = 0.15; // Minimum gap between top 2 predictions
+
+      // Reject if confidence is too low OR predictions are too close (indicating uncertainty)
+      if (topConfidence < CONFIDENCE_THRESHOLD || confidenceGap < MIN_CONFIDENCE_GAP) {
+        const supportedPlantTypes = this.labels.map(l => l.split(/[___]/)[0]).filter((v, i, a) => a.indexOf(v) === i);
+        
+        let rejectionReason = '';
+        if (topConfidence < CONFIDENCE_THRESHOLD) {
+          rejectionReason = `Low confidence prediction (${(topConfidence * 100).toFixed(1)}%)`;
+        } else {
+          rejectionReason = `Uncertain prediction - top predictions too close (gap: ${(confidenceGap * 100).toFixed(1)}%)`;
+        }
+        
+        console.log('[MLService] Prediction rejected:', {
+          reason: rejectionReason,
+          topConfidence: (topConfidence * 100).toFixed(1) + '%',
+          confidenceGap: (confidenceGap * 100).toFixed(1) + '%',
+          threshold: (CONFIDENCE_THRESHOLD * 100).toFixed(1) + '%',
+          minGap: (MIN_CONFIDENCE_GAP * 100).toFixed(1) + '%'
+        });
+
+        throw new Error(
+          `${rejectionReason}. This image may not be a supported plant type or the quality may be too low. ` +
+          `Supported plants: ${supportedPlantTypes.join(', ')}. ` +
+          `Please ensure you're photographing a clear leaf from one of these plant types.`
+        );
       }
 
       const diseaseInfo = diseaseService.getDiseaseInfo(predictedLabel);
@@ -160,9 +207,9 @@ class MLService {
       let severityLevel: SeverityLevel;
       if (isHealthy) {
           severityLevel = 'Healthy' as SeverityLevel.Healthy;
-      } else if (confidence > 0.9) {
+      } else if (topConfidence > 0.9) {
           severityLevel = 'Severe' as SeverityLevel.Severe;
-      } else if (confidence > 0.8) {
+      } else if (topConfidence > 0.8) {
           severityLevel = 'Moderate' as SeverityLevel.Moderate;
       } else {
           severityLevel = 'Mild' as SeverityLevel.Mild;
@@ -170,14 +217,14 @@ class MLService {
 
       return {
         label: predictedLabel,
-        confidence,
+        confidence: topConfidence,
         diseaseInfo,
         timestamp: Date.now(),
         imagePath,
         plantType,
         plantName: plantType, // Add plantName for analysis display
         isHealthy,
-        confidencePercentage: `${(confidence * 100).toFixed(1)}%`,
+        confidencePercentage: `${(topConfidence * 100).toFixed(1)}%`,
         severityLevel,
       };
     } catch (error) {
