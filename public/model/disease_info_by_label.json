@@ -122,6 +122,40 @@
     ],
     "when_to_worry": "This disease spreads easily - act fast"
   },
+  "Pumpkin___Downy_Mildew": {
+    "technical_name": "Downy Mildew",
+    "farmer_name": "White Fuzzy Disease",
+    "simple_description": "Yellow spots on top of leaves with white fuzz underneath",
+    "farmer_message": "⚠️ Found White Fuzzy Disease on your plant",
+    "what_farmer_sees": [
+      "Yellow spots on leaf tops",
+      "White cotton-like fuzz on leaf bottoms",
+      "Spots have blurry edges",
+      "Older leaves affected first"
+    ],
+    "severity_guide": {
+      "mild": "Few small yellow spots with light fuzz",
+      "moderate": "Several yellow spots with clear white fuzz",
+      "severe": "Many large spots, heavy white growth, leaves dying"
+    },
+    "immediate_action": [
+      "Remove sick leaves right away",
+      "Don't water the leaves - water the soil only",
+      "Move plants apart for better air flow"
+    ],
+    "treatment": [
+      "Spray copper fungicide early morning",
+      "Apply treatment every 7-10 days",
+      "Stop if weather is very hot"
+    ],
+    "prevention_tips": [
+      "Water soil, not leaves",
+      "Plant in sunny, windy spots",
+      "Don't touch wet plants",
+      "Space plants wider apart"
+    ],
+    "when_to_worry": "If white fuzz spreads to many leaves quickly"
+  },
   "Pumpkin___Healthy_Leaf": {
     "technical_name": "Healthy Plant",
     "farmer_name": "Healthy Crop",

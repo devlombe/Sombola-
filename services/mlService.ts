@@ -208,6 +208,31 @@ class MLService {
         .toLowerCase()
         .includes("healthy");
 
+      // 3. Stricter check for 'healthy' predictions to avoid false positives on non-plant images.
+      // If the model predicts a leaf is healthy, we require a much higher confidence
+      // to be sure it's not misclassifying an out-of-distribution image (like a selfie).
+      if (isTopPredictionHealthy) {
+        const HEALTHY_CONFIDENCE_THRESHOLD = 0.85; // Must be very confident it's healthy
+        const HEALTHY_CONFIDENCE_GAP = 0.5; // Must be a clear winner over any disease
+        if (
+          topConfidence < HEALTHY_CONFIDENCE_THRESHOLD ||
+          confidenceGap < HEALTHY_CONFIDENCE_GAP
+        ) {
+          const rejectionReason = `Uncertain 'healthy' prediction`;
+          console.log(
+            "[MLService] Prediction rejected due to uncertain 'healthy' classification:",
+            {
+              reason: rejectionReason,
+              topConfidence: (topConfidence * 100).toFixed(1) + "%",
+              confidenceGap: (confidenceGap * 100).toFixed(1) + "%",
+            },
+          );
+          throw new Error(
+            `${rejectionReason}. The image may not be a clear photo of a supported plant leaf. Please try again.`,
+          );
+        }
+      }
+
       if (isTopPredictionHealthy) {
         const topPlantType = getPlantType(topPrediction.label);
         const secondPlantType = getPlantType(TOP_PREDICTIONS[1].label);
