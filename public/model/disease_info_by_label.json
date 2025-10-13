@@ -10,12 +10,8 @@
       "Normal leaf shape",
       "Plant growing well"
     ],
-    "immediate_action": [
-      "Keep doing what you're doing!"
-    ],
-    "treatment": [
-      "Continue regular watering and care"
-    ],
+    "immediate_action": ["Keep doing what you're doing!"],
+    "treatment": ["Continue regular watering and care"],
     "prevention_tips": [
       "Maintain good plant care",
       "Water regularly",
@@ -26,7 +22,7 @@
     "technical_name": "Bacterial Leaf Spot",
     "farmer_name": "Brown Spot Disease",
     "simple_description": "Small brown spots that look wet, usually square-shaped",
-    "farmer_message": "\u26a0\ufe0f Found Brown Spot Disease on your plant",
+    "farmer_message": "⚠️ Found Brown Spot Disease on your plant",
     "what_farmer_sees": [
       "Small brown spots on leaves",
       "Spots look water-soaked",
@@ -60,7 +56,7 @@
     "technical_name": "Mosaic Virus",
     "farmer_name": "Mottled Leaf Disease",
     "simple_description": "Leaves show light and dark green patches like a puzzle",
-    "farmer_message": "\u26a0\ufe0f Found Mottled Leaf Disease on your plant",
+    "farmer_message": "⚠️ Found Mottled Leaf Disease on your plant",
     "what_farmer_sees": [
       "Light and dark green patches on leaves",
       "Puzzle-like pattern",
@@ -86,50 +82,16 @@
     "prevention_tips": [
       "Use virus-free seeds",
       "Control aphids with sprays",
-      "Don't smoke near tomato plants",
-      "Keep insects away from crops"
+      "Don't smoke near eggplant plants",
+      "Keep the area free of weeds"
     ],
     "when_to_worry": "This disease spreads easily - act fast"
-  },
-  "Pumpkin___Bacterial_Leaf_Spot": {
-    "technical_name": "Bacterial Leaf Spot",
-    "farmer_name": "Brown Spot Disease",
-    "simple_description": "Small brown spots that look wet, usually square-shaped",
-    "farmer_message": "\u26a0\ufe0f Found Brown Spot Disease on your plant",
-    "what_farmer_sees": [
-      "Small brown spots on leaves",
-      "Spots look water-soaked",
-      "Square or rectangular shapes",
-      "Spots follow leaf veins"
-    ],
-    "severity_guide": {
-      "mild": "Few small brown spots, plant still strong",
-      "moderate": "Many brown spots, some leaves turning yellow",
-      "severe": "Lots of spots joining together, leaves falling off"
-    },
-    "immediate_action": [
-      "Remove spotted leaves and burn them",
-      "Clean your tools with bleach water",
-      "Don't touch healthy plants after touching sick ones"
-    ],
-    "treatment": [
-      "Spray copper treatment in early morning",
-      "Use clean, disease-free seeds next time",
-      "Water only at soil level"
-    ],
-    "prevention_tips": [
-      "Buy good quality seeds",
-      "Change crop location each year",
-      "Water soil, not leaves",
-      "Work with dry plants only"
-    ],
-    "when_to_worry": "If spots appear on fruits or spread very fast"
   },
   "Pumpkin___Mosaic_Disease": {
     "technical_name": "Mosaic Virus",
     "farmer_name": "Mottled Leaf Disease",
     "simple_description": "Leaves show light and dark green patches like a puzzle",
-    "farmer_message": "\u26a0\ufe0f Found Mottled Leaf Disease on your plant",
+    "farmer_message": "⚠️ Found Mottled Leaf Disease on your plant",
     "what_farmer_sees": [
       "Light and dark green patches on leaves",
       "Puzzle-like pattern",
@@ -155,7 +117,7 @@
     "prevention_tips": [
       "Use virus-free seeds",
       "Control aphids with sprays",
-      "Don't smoke near tomato plants",
+      "Don't smoke near pumpkin plants",
       "Keep insects away from crops"
     ],
     "when_to_worry": "This disease spreads easily - act fast"
@@ -171,12 +133,8 @@
       "Normal leaf shape",
       "Plant growing well"
     ],
-    "immediate_action": [
-      "Keep doing what you're doing!"
-    ],
-    "treatment": [
-      "Continue regular watering and care"
-    ],
+    "immediate_action": ["Keep doing what you're doing!"],
+    "treatment": ["Continue regular watering and care"],
     "prevention_tips": [
       "Maintain good plant care",
       "Water regularly",
@@ -194,12 +152,8 @@
       "Normal leaf shape",
       "Plant growing well"
     ],
-    "immediate_action": [
-      "Keep doing what you're doing!"
-    ],
-    "treatment": [
-      "Continue regular watering and care"
-    ],
+    "immediate_action": ["Keep doing what you're doing!"],
+    "treatment": ["Continue regular watering and care"],
     "prevention_tips": [
       "Maintain good plant care",
       "Water regularly",
@@ -210,7 +164,7 @@
     "technical_name": "Bacterial Leaf Spot",
     "farmer_name": "Brown Spot Disease",
     "simple_description": "Small brown spots that look wet, usually square-shaped",
-    "farmer_message": "\u26a0\ufe0f Found Brown Spot Disease on your plant",
+    "farmer_message": "⚠️ Found Brown Spot Disease on your plant",
     "what_farmer_sees": [
       "Small brown spots on leaves",
       "Spots look water-soaked",
@@ -244,7 +198,7 @@
     "technical_name": "Mosaic Virus",
     "farmer_name": "Mottled Leaf Disease",
     "simple_description": "Leaves show light and dark green patches like a puzzle",
-    "farmer_message": "\u26a0\ufe0f Found Mottled Leaf Disease on your plant",
+    "farmer_message": "⚠️ Found Mottled Leaf Disease on your plant",
     "what_farmer_sees": [
       "Light and dark green patches on leaves",
       "Puzzle-like pattern",
