@@ -157,7 +157,50 @@ class MLService {
         })),
       });
 
-      // New check for misclassification of healthy leaves from unsupported plants.
+      // Helper to extract plant type from a label string
+      const getPlantType = (label: string) => {
+        if (label.includes("___")) return label.split("___")[0];
+        if (label.includes("__")) return label.split("__")[0];
+        return label.split("_")[0];
+      };
+
+      // --- VALIDATION CHECKS ---
+
+      // 1. Check for out-of-distribution images (e.g., selfies, non-leaf objects).
+      // If the model's top predictions are for completely different plants, it's highly
+      // uncertain and likely not looking at a supported leaf.
+      if (TOP_PREDICTIONS.length >= 3) {
+        const topPlantType = getPlantType(TOP_PREDICTIONS[0].label);
+        const secondPlantType = getPlantType(TOP_PREDICTIONS[1].label);
+        const thirdPlantType = getPlantType(TOP_PREDICTIONS[2].label);
+
+        if (
+          topPlantType !== secondPlantType &&
+          secondPlantType !== thirdPlantType &&
+          topPlantType !== thirdPlantType
+        ) {
+          const supportedPlantTypes = this.labels
+            .map((l) => getPlantType(l))
+            .filter((v, i, a) => a.indexOf(v) === i);
+          const rejectionReason = `Image cannot be classified. It does not appear to be a supported plant leaf.`;
+
+          console.log(
+            "[MLService] Prediction rejected due to high plant type variance:",
+            {
+              topPredictions: TOP_PREDICTIONS.map((p) => ({
+                plant: getPlantType(p.label),
+                confidence: (p.confidence * 100).toFixed(1) + "%",
+              })),
+            },
+          );
+
+          throw new Error(
+            `${rejectionReason} Please use a clear photo of a leaf from a supported plant: ${supportedPlantTypes.join(", ")}.`,
+          );
+        }
+      }
+
+      // 2. Check for misclassification of healthy leaves from unsupported plants.
       // This handles cases where the model confidently misclassifies a leaf from an
       // unsupported plant as a healthy leaf of a supported plant.
       const topPrediction = TOP_PREDICTIONS[0];
@@ -166,18 +209,11 @@ class MLService {
         .includes("healthy");
 
       if (isTopPredictionHealthy) {
-        const getPlantType = (label: string) => {
-          if (label.includes("___")) return label.split("___")[0];
-          if (label.includes("__")) return label.split("__")[0];
-          return label.split("_")[0];
-        };
-
         const topPlantType = getPlantType(topPrediction.label);
         const secondPlantType = getPlantType(TOP_PREDICTIONS[1].label);
 
-        // If the top prediction is for a healthy plant, but the second prediction is
-        // for a *different* plant, it's a strong sign of an out-of-distribution image
-        // (e.g., a pumpkin leaf being classified as Tomato Healthy then Potato Healthy).
+        // If the top prediction is healthy, but the second is a *different* plant,
+        // it's a strong sign of an out-of-distribution image.
         if (topPlantType !== secondPlantType) {
           const supportedPlantTypes = this.labels
             .map((l) => getPlantType(l))
@@ -200,22 +236,18 @@ class MLService {
         }
       }
 
-      // Enhanced confidence threshold logic
-      // This approach helps detect unsupported crops by checking both:
-      // 1. Overall confidence level (is the prediction strong enough?)
-      // 2. Confidence gap (are the top predictions too close, indicating uncertainty?)
-      const CONFIDENCE_THRESHOLD = 0.4; // Slightly higher threshold for better accuracy
-      const MIN_CONFIDENCE_GAP = 0.15; // Minimum gap between top 2 predictions
+      // 3. General confidence and uncertainty check.
+      // This rejects predictions that are either not confident enough or too close to call.
+      const CONFIDENCE_THRESHOLD = 0.5; // Increased for better accuracy
+      const MIN_CONFIDENCE_GAP = 0.15;
 
-      // Reject if confidence is too low OR predictions are too close (indicating uncertainty)
       if (
         topConfidence < CONFIDENCE_THRESHOLD ||
         confidenceGap < MIN_CONFIDENCE_GAP
       ) {
         const supportedPlantTypes = this.labels
-          .map((l) => l.split(/[___]/)[0])
+          .map((l) => getPlantType(l))
           .filter((v, i, a) => a.indexOf(v) === i);
-
         let rejectionReason = "";
         if (topConfidence < CONFIDENCE_THRESHOLD) {
           rejectionReason = `Low confidence prediction (${(topConfidence * 100).toFixed(1)}%)`;
@@ -223,13 +255,14 @@ class MLService {
           rejectionReason = `Uncertain prediction - top predictions too close (gap: ${(confidenceGap * 100).toFixed(1)}%)`;
         }
 
-        console.log("[MLService] Prediction rejected:", {
-          reason: rejectionReason,
-          topConfidence: (topConfidence * 100).toFixed(1) + "%",
-          confidenceGap: (confidenceGap * 100).toFixed(1) + "%",
-          threshold: (CONFIDENCE_THRESHOLD * 100).toFixed(1) + "%",
-          minGap: (MIN_CONFIDENCE_GAP * 100).toFixed(1) + "%",
-        });
+        console.log(
+          "[MLService] Prediction rejected due to low confidence/gap:",
+          {
+            reason: rejectionReason,
+            topConfidence: (topConfidence * 100).toFixed(1) + "%",
+            confidenceGap: (confidenceGap * 100).toFixed(1) + "%",
+          },
+        );
 
         throw new Error(
           `${rejectionReason}. This image may not be a supported plant type or the quality may be too low. ` +
